@@ -218,13 +218,17 @@ export function runBacktest(p) {
 
   const tradingDates = priceRows.map((r) => r.date).filter((d) => d >= effectiveStart && d <= effectiveEnd)
   const buyDates = contributionDates(tradingDates, frequency)
-  const getFx = makeFxLookup(fxRows)
 
   const sortedRules = [...rules].sort((a, b) => a.period - b.period)
 
   const scenarios = []
   for (let k = 0; k <= sortedRules.length; k++) {
     const activeRules = sortedRules.slice(0, k)
+    // Fresh FX lookup per scenario run: its internal pointer only walks forward,
+    // so reusing one instance across simulate() calls would carry the pointer
+    // from the previous (already-fully-walked) run and read stale/late FX rates
+    // for every early date in this run.
+    const getFx = makeFxLookup(fxRows)
     const result = simulate({ tradingDates, closesByDate, smaByDate, getFx, buyDates, baseAmount, activeRules })
     scenarios.push({
       label:
