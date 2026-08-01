@@ -8,6 +8,24 @@ function toUnix(dateStr) {
   return Math.floor(new Date(`${dateStr}T00:00:00Z`).getTime() / 1000)
 }
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+
+// Yahoo's edge occasionally hiccups with a transient 404/429/5xx on a valid
+// symbol; retry a couple of times before treating it as a real failure.
+async function fetchWithRetry(url, attempts = 3) {
+  let lastRes = null
+  for (let i = 0; i < attempts; i++) {
+    if (i > 0) await sleep(400 * i)
+    try {
+      lastRes = await fetch(url)
+    } catch {
+      continue
+    }
+    if (lastRes.ok) return lastRes
+  }
+  return lastRes
+}
+
 /**
  * Fetches daily OHLC history for a symbol between two ISO dates (inclusive-ish;
  * Yahoo trims to actual trading days). Throws with a friendly message on failure.
@@ -17,10 +35,8 @@ export async function fetchDailyHistory(symbol, startDate, endDate) {
   const period2 = toUnix(endDate) + DAY_SECONDS
   const url = `/api/yahoo/${encodeURIComponent(symbol)}?period1=${period1}&period2=${period2}&interval=1d&events=div,splits`
 
-  let res
-  try {
-    res = await fetch(url)
-  } catch {
+  const res = await fetchWithRetry(url)
+  if (!res) {
     throw new Error(`${symbol} 데이터 요청에 실패했습니다 (네트워크 오류). 개발 서버(npm run dev)가 실행 중인지 확인하세요.`)
   }
 

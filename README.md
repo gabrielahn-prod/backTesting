@@ -9,10 +9,15 @@ npm install
 npm run dev
 ```
 
-`.env`나 API 키는 필요 없습니다. 가격/환율 데이터는 Yahoo Finance 비공식 차트 API를 `vite.config.js`의
-dev 서버 프록시(`/api/yahoo/*`)를 통해 가져옵니다 — 브라우저에서 직접 호출하면 CORS로 막히기 때문입니다.
-**이 프록시는 `npm run dev`로 로컬에서 켠 vite 서버에서만 동작합니다.** 정적 빌드(`npm run build`)를
-Vercel 등에 배포하려면 동일한 로직을 서버리스 함수(예: `/api/yahoo/[symbol].js`)로 옮겨야 합니다.
+`.env`나 API 키는 필요 없습니다. 가격/환율/심볼검색 데이터는 Yahoo Finance 비공식 API를 프록시로 거쳐
+가져옵니다 — 브라우저에서 직접 호출하면 CORS로 막히기 때문입니다. 두 군데에 동일한 프록시가 있습니다:
+
+- **로컬 개발**: `vite.config.js`의 dev 서버 프록시 (`npm run dev`로 켰을 때만 동작)
+- **배포(Vercel)**: `api/yahoo/[symbol].js`, `api/symbol-search.js` 서버리스 함수 (Vercel에 그대로
+  올리면 자동으로 인식됩니다. `vercel --prod` 또는 GitHub 연동 배포 둘 다 됩니다)
+
+프론트엔드는 두 경우 모두 같은 경로(`/api/yahoo/...`, `/api/symbol-search`)를 호출하므로 코드 변경 없이
+로컬/배포 환경을 오갈 수 있습니다.
 
 ## 종목 심볼
 
