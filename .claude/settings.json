@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -o /dev/null -w \"index.html: %{http_code}\\\\n\" http://localhost:5183/)",
+      "Bash(curl -s -o /dev/null -w \"main.jsx: %{http_code}\\\\n\" http://localhost:5183/src/main.jsx)",
+      "Bash(curl -s \"http://localhost:5183/api/yahoo/KRW=X?period1=1700000000&period2=1700100000&interval=1d\")",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('KRW=X ok, currency:', d['chart']['result'][0]['meta']['currency']\\)\")"
+    ]
+  }
+}
