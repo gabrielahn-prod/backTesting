@@ -5,7 +5,8 @@
 }
 
 header h1 {
-  font-size: 26px;
+  font-size: clamp(20px, 5.5vw, 26px);
+  line-height: 1.25;
 }
 
 .muted {
@@ -50,12 +51,14 @@ section > h2 {
 
 .field input,
 .field select {
-  font: inherit;
+  font-family: inherit;
+  font-size: 16px; /* >=16px avoids iOS Safari zooming in on focus */
   padding: 8px 10px;
   border: 1px solid var(--border-strong);
   border-radius: 8px;
   background: var(--surface-1);
   color: var(--text-primary);
+  width: 100%;
 }
 
 .symbol-search {
@@ -64,7 +67,8 @@ section > h2 {
 
 .symbol-search input {
   width: 100%;
-  font: inherit;
+  font-family: inherit;
+  font-size: 16px;
   padding: 8px 10px;
   border: 1px solid var(--border-strong);
   border-radius: 8px;
@@ -150,7 +154,8 @@ section > h2 {
 
 .rule-row input {
   width: 90px;
-  font: inherit;
+  font-family: inherit;
+  font-size: 16px;
   padding: 6px 8px;
   border: 1px solid var(--border-strong);
   border-radius: 6px;
@@ -331,8 +336,54 @@ tbody tr:last-child td {
   color: var(--text-secondary);
 }
 
+.chart-canvas {
+  width: 100%;
+  aspect-ratio: 16 / 7;
+}
+
 @media (max-width: 640px) {
   .field-row {
     flex-direction: column;
+  }
+
+  .chart-block {
+    padding: 12px 10px;
+  }
+
+  .chart-canvas {
+    aspect-ratio: 4 / 3;
+  }
+
+  .cards {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+  }
+
+  .card {
+    padding: 10px 12px;
+  }
+
+  .card-value {
+    font-size: 17px;
+  }
+
+  .rule-row {
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .rule-row input {
+    width: 76px;
+  }
+
+  .btn-primary {
+    align-self: stretch;
+    padding: 12px 20px;
+  }
+
+  th, td {
+    padding: 8px 10px;
+    font-size: 12px;
   }
 }

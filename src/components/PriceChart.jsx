@@ -9,31 +9,34 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts'
+import { useIsMobile } from '../lib/useIsMobile'
 
 const MA_COLORS = ['var(--series-2)', 'var(--series-3)', 'var(--series-4)']
 
 export default function PriceChart({ chartData, maPeriods, events, currency }) {
+  const isMobile = useIsMobile()
   const eventsByPeriod = new Map(maPeriods.map((p) => [p, []]))
   events.forEach((e) => eventsByPeriod.get(e.period)?.push({ date: e.date, y: e.close }))
 
-  const tickStep = Math.max(1, Math.floor(chartData.length / 8))
+  const tickStep = Math.max(1, Math.floor(chartData.length / (isMobile ? 4 : 8)))
 
   return (
     <div className="chart-block">
       <h3>가격 &amp; 이동평균선</h3>
-      <ResponsiveContainer width="100%" height={340}>
-        <ComposedChart data={chartData} margin={{ top: 8, right: 16, left: 8, bottom: 8 }}>
+      <div className="chart-canvas">
+        <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart data={chartData} margin={{ top: 8, right: isMobile ? 4 : 16, left: isMobile ? 0 : 8, bottom: 8 }}>
           <CartesianGrid stroke="var(--border)" vertical={false} />
           <XAxis
             dataKey="date"
-            tick={{ fill: 'var(--text-muted)', fontSize: 12 }}
+            tick={{ fill: 'var(--text-muted)', fontSize: isMobile ? 10 : 12 }}
             interval={tickStep}
             stroke="var(--border-strong)"
           />
           <YAxis
-            tick={{ fill: 'var(--text-muted)', fontSize: 12 }}
+            tick={{ fill: 'var(--text-muted)', fontSize: isMobile ? 10 : 12 }}
             stroke="var(--border-strong)"
-            width={70}
+            width={isMobile ? 48 : 70}
             domain={['auto', 'auto']}
             tickFormatter={(v) => v.toLocaleString()}
           />
@@ -77,7 +80,8 @@ export default function PriceChart({ chartData, maPeriods, events, currency }) {
             />
           ))}
         </ComposedChart>
-      </ResponsiveContainer>
+        </ResponsiveContainer>
+      </div>
     </div>
   )
 }
